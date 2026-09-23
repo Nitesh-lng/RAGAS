@@ -37,11 +37,7 @@ test_data = [
     },
 ]
 
-
-# ------------------------------------------------------------------
 # Judge LLM — this grades the outputs. (RAGAS uses an LLM the same way.)
-# temperature=0 so scores are deterministic/consistent.
-# ------------------------------------------------------------------
 judge_llm = ChatGroq(model=LLM_MODEL, temperature=0)
 
 
@@ -49,14 +45,11 @@ def _to_score(text):
     """LLM returns text like '0.8' — safely turn it into a float in [0, 1]."""
     try:
         value = float(text.strip().split()[0])
-        return max(0.0, min(1.0, value))   # clamp to [0, 1]
+        return max(0.0, min(1.0, value))   
     except (ValueError, IndexError):
         return 0.0
 
-
-# ------------------------------------------------------------------
 # Metric 1 — Faithfulness: answer grounded in the context? (anti-hallucination)
-# ------------------------------------------------------------------
 faithfulness_prompt = ChatPromptTemplate.from_template(
     """You are evaluating whether an answer is grounded in the given context.
 
@@ -82,10 +75,7 @@ def faithfulness_score(answer, contexts):
     result = faithfulness_chain.invoke({"context": context_text, "answer": answer})
     return _to_score(result)
 
-
-# ------------------------------------------------------------------
 # Metric 2 — Answer Relevancy: does the answer address the question?
-# ------------------------------------------------------------------
 relevancy_prompt = ChatPromptTemplate.from_template(
     """You are evaluating whether an answer actually addresses the question.
 
@@ -110,11 +100,7 @@ def answer_relevancy_score(question, answer):
     result = relevancy_chain.invoke({"question": question, "answer": answer})
     return _to_score(result)
 
-
-# ------------------------------------------------------------------
 # Metric 3 — Context Precision: are the retrieved chunks relevant?
-# (low = lots of noise/irrelevant chunks retrieved)
-# ------------------------------------------------------------------
 precision_prompt = ChatPromptTemplate.from_template(
     """You are evaluating how relevant the retrieved context is to the question.
 
@@ -140,11 +126,7 @@ def context_precision_score(question, contexts):
     result = precision_chain.invoke({"question": question, "context": context_text})
     return _to_score(result)
 
-
-# ------------------------------------------------------------------
 # Metric 4 — Context Recall: does the context cover the ground-truth?
-# (low = important chunks were missed during retrieval)
-# ------------------------------------------------------------------
 recall_prompt = ChatPromptTemplate.from_template(
     """You are evaluating whether the retrieved context contains the information
 needed to produce the ground-truth answer.
@@ -171,10 +153,6 @@ def context_recall_score(ground_truth, contexts):
     result = recall_chain.invoke({"ground_truth": ground_truth, "context": context_text})
     return _to_score(result)
 
-
-# ------------------------------------------------------------------
-# Run evaluation
-# ------------------------------------------------------------------
 def main():
     rag = SimpleRag()
 

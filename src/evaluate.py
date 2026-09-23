@@ -19,11 +19,9 @@ from langchain_core.output_parsers import StrOutputParser
 from src.rag import SimpleRag
 from src.config import LLM_MODEL
 
-
-# ------------------------------------------------------------------
 # Golden dataset — questions + ideal (ground-truth) answers.
 # ground_truth is written by a human, based on what the PDF actually says.
-# ------------------------------------------------------------------
+
 test_data = [
     {
         "question": "What are the two main components of a RAG system?",

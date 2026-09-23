@@ -165,12 +165,12 @@ def main():
         question = item["question"]
         ground_truth = item["ground_truth"]
 
-        # 1. Run our RAG -> answer + contexts
+      
         result = rag.query(question)
         answer = result["answer"]
         contexts = result["contexts"]
 
-        # 2. Score each metric
+        
         f = faithfulness_score(answer, contexts)
         r = answer_relevancy_score(question, answer)
         p = context_precision_score(question, contexts)
@@ -185,7 +185,6 @@ def main():
         print(f"   faithfulness={f:.2f}  answer_relevancy={r:.2f}  "
               f"context_precision={p:.2f}  context_recall={rec:.2f}")
 
-    # 3. Averages across the dataset — the RAG "report card"
     def avg(xs):
         return sum(xs) / len(xs) if xs else 0.0
 
